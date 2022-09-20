@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:iconsax/iconsax.dart';
@@ -36,25 +38,7 @@ class WeatherDailyView extends GetView<WeatherDailyController> {
                     blurRadius: 2.h,
                     spreadRadius: 1.h),
               ],
-              gradient: Gradient.lerp(
-                const LinearGradient(
-                  colors: [
-                    AppColors.white,
-                    AppColors.blueLight10,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                const LinearGradient(
-                  colors: [
-                    AppColors.blueLight10,
-                    AppColors.blueLight60,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                1,
-              ),
+              gradient: AppColors.mainBgGradien(),
             ),
             child: SafeArea(
               child: Column(
@@ -67,9 +51,12 @@ class WeatherDailyView extends GetView<WeatherDailyController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            AppSvgIcon(
-                              asset: AppIcons.menuIcon,
-                              size: 35.sp,
+                            GestureDetector(
+                              onTap: () => Get.back(),
+                              child: AppSvgIcon(
+                                asset: AppIcons.menuIcon,
+                                size: 35.sp,
+                              ),
                             ),
                             AppSvgIcon(
                               asset: AppIcons.verticalMenu,
@@ -106,9 +93,15 @@ class WeatherDailyView extends GetView<WeatherDailyController> {
                       Expanded(
                         child: SizedBox(
                           height: 150.h,
-                          child: Image.network(
-                            'http://openweathermap.org/img/wn/10n@2x.png',
+                          child: CachedNetworkImage(
+                            errorWidget: (context, url, error) => Icon(
+                              Iconsax.gallery_slash,
+                              color: AppColors.white,
+                              size: 40.sp,
+                            ),
                             fit: BoxFit.fitHeight,
+                            imageUrl:
+                                'http://openweathermap.org/img/wn/10n@2x.png',
                           ),
                         ),
                       ),
@@ -224,70 +217,83 @@ class WeatherDailyView extends GetView<WeatherDailyController> {
     );
   }
 
-  TableRow _buildRowTable(DailyWeather dailyWeather) {
+  TableRow _buildRowTable(DailyWeather weather) {
     return TableRow(
-
       children: [
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
-          child: Text(
-            number2Time(number: dailyWeather.dt, type: TimeType.day),
-            style: TextStyle(
-              color: AppColors.gray20,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
-              overflow: TextOverflow.ellipsis,
+          child: InkWell(
+            onTap: () => controller.active.value = weather,
+            child: Text(
+              number2Time(number: weather.dt, type: TimeType.day),
+              style: TextStyle(
+                color: AppColors.gray20,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
-        Row(
-          children: [
-            SizedBox(
-              width: 60.r,
-              height: 60.r,
-              child: Image.network(
-                'http://openweathermap.org/img/wn/${dailyWeather.weather.first.icon}@2x.png',
-                fit: BoxFit.cover,
-                alignment: FractionalOffset.topCenter,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                dailyWeather.weather.first.description,
-                style: TextStyle(
-                  color: AppColors.gray20,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                  overflow: TextOverflow.ellipsis
+        InkWell(
+          onTap: () => controller.active.value = weather,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 60.r,
+                height: 60.r,
+                child: CachedNetworkImage(
+                  errorWidget: (context, url, error) => Icon(
+                    Iconsax.gallery_slash,
+                    color: AppColors.white,
+                    size: 40.sp,
+                  ),
+                  fit: BoxFit.cover,
+                  alignment: FractionalOffset.topCenter,
+                  imageUrl:
+                      'http://openweathermap.org/img/wn/${weather.weather.first.icon}@2x.png',
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Text(
+                  weather.weather.first.description,
+                  style: TextStyle(
+                      color: AppColors.gray20,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      overflow: TextOverflow.ellipsis),
+                ),
+              ),
+            ],
+          ),
         ),
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-                children: [
-                  TextSpan(
-                    text: '${dailyWeather.temp.max}\u00B0',
-                    style: const TextStyle(
-                      color: AppColors.white,
-                    ),
+          child: InkWell(
+            onTap: () => controller.active.value = weather,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
                   ),
-                  TextSpan(
-                    text: ' ${dailyWeather.temp.min}\u00B0',
-                    style: const TextStyle(
-                      color: AppColors.blueLight20,
+                  children: [
+                    TextSpan(
+                      text: '${weather.temp.max}\u00B0',
+                      style: const TextStyle(
+                        color: AppColors.white,
+                      ),
                     ),
-                  )
-                ],
+                    TextSpan(
+                      text: ' ${weather.temp.min}\u00B0',
+                      style: const TextStyle(
+                        color: AppColors.blueLight20,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

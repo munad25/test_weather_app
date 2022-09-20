@@ -1,6 +1,9 @@
+import 'package:test_weather_app/feature/weather/domain/entities/abstract/abs_weather.dart';
 import 'package:test_weather_app/feature/weather/domain/entities/weather.dart';
 
-class CurrentWeather {
+class CurrentWeather implements AbsWeather {
+  // @override
+  @override
   final int dt;
   final double temp;
   final double wind_speed;
@@ -8,7 +11,7 @@ class CurrentWeather {
   final int clouds;
   final List<Weather> weather;
 
-  const CurrentWeather({
+   CurrentWeather({
     required this.dt,
     required this.temp,
     required this.wind_speed,
@@ -16,4 +19,5 @@ class CurrentWeather {
     required this.weather,
     required this.clouds,
   });
+  
 }

@@ -9,4 +9,26 @@ class AppColors {
   static const Color blueLight20 = Color(0xff82B5F8);
   static const Color blueLight60 = Color(0xff126CF4);
   static const Color yellowLight = Color(0xffFFF30F);
+
+  static Gradient? mainBgGradien() {
+    return Gradient.lerp(
+      const LinearGradient(
+        colors: [
+          AppColors.white,
+          AppColors.blueLight10,
+        ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+      const LinearGradient(
+        colors: [
+          AppColors.blueLight10,
+          AppColors.blueLight60,
+        ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+      1,
+    );
+  }
 }

@@ -56,6 +56,8 @@ class WeatherRepositoryImpl implements WeatherRepository {
       final response = await _networkServices.getWeatherData(queries.build());
       final List<dynamic> rawData = response.data['daily'] ?? [];
       final dailyWeather = rawData.map((e) => DailyWeatherModel.fromJson(e)).toList();
+
+      _localServices.saveDailyWeatherData(dailyWeather);
       return Right(dailyWeather);
     } on DioError catch (err) {
       return const Left(

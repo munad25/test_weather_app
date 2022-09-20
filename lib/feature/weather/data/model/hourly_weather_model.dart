@@ -10,6 +10,9 @@ class HourlyWeatherModel extends HourlyWeather {
   HourlyWeatherModel({
     required super.dt,
     required super.temp,
+    required super.clouds,
+    required super.humidity,
+    required super.wind_speed,
     required this.weather,
   }) : super(weather: weather);
 

@@ -9,4 +9,5 @@ import 'package:test_weather_app/feature/weather/domain/schema/get_weather_schem
 abstract class WeatherRepository {
   Future<Either<Failure, TodayWeather>> getTodayWeather(Position position);
   Future<Either<Failure, List<DailyWeather>>> getDailyWeather(Position position);
+  
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:calendar_time/calendar_time.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,39 +27,20 @@ class HomeView extends GetView<HomeController> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(65.r),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                      color: AppColors.blueLight60,
-                      blurRadius: 20.h,
-                      spreadRadius: 10.h),
-                  BoxShadow(
-                      color: AppColors.blueLight10,
-                      blurRadius: 2.h,
-                      spreadRadius: 1.h),
-                ],
-                gradient: Gradient.lerp(
-                  const LinearGradient(
-                    colors: [
-                      AppColors.white,
-                      AppColors.blueLight10,
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(65.r),
                   ),
-                  const LinearGradient(
-                    colors: [
-                      AppColors.blueLight10,
-                      AppColors.blueLight60,
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  1,
-                ),
-              ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppColors.blueLight60,
+                        blurRadius: 20.h,
+                        spreadRadius: 10.h),
+                    BoxShadow(
+                        color: AppColors.blueLight10,
+                        blurRadius: 2.h,
+                        spreadRadius: 1.h),
+                  ],
+                  gradient: AppColors.mainBgGradien()),
               child: SafeArea(
                 child: Column(
                   children: [
@@ -136,16 +118,18 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     Obx(() {
-                      if (controller.todayWeather.value != null) {
-                        final icon = controller
-                            .todayWeather.value!.current.weather.first.icon;
+                      if (controller.active.value != null) {
+                        final icon =
+                            controller.active.value!.weather.first.icon;
                         return SizedBox(
                           height: 150.h,
                           width: 150.h,
-                          child: Image.network(
-                            'http://openweathermap.org/img/wn/$icon@2x.png',
+                          child: CachedNetworkImage(
+                            errorWidget: (context, url, error) => Icon(Iconsax.gallery_slash, color: AppColors.white, size: 40.sp,),
                             fit: BoxFit.cover,
                             alignment: FractionalOffset.topCenter,
+                            imageUrl:
+                                'http://openweathermap.org/img/wn/$icon@2x.png',
                           ),
                         );
                       }
@@ -160,8 +144,7 @@ class HomeView extends GetView<HomeController> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text:
-                                  '${controller.todayWeather.value?.current.temp ?? 0}',
+                              text: '${controller.active.value?.temp ?? 0}',
                               style: TextStyle(
                                 color: AppColors.white,
                                 fontWeight: FontWeight.w700,
@@ -182,8 +165,7 @@ class HomeView extends GetView<HomeController> {
                     ),
                     Obx(
                       () => Text(
-                        controller.todayWeather.value?.current.weather.first
-                                .description ??
+                        controller.active.value?.weather.first.description ??
                             '-',
                         style: TextStyle(
                           color: AppColors.white,
@@ -193,10 +175,10 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     Obx(() {
-                      if (controller.todayWeather.value != null) {
+                      if (controller.active.value != null) {
                         return Text(
                           number2Time(
-                            number: controller.todayWeather.value!.current.dt,
+                            number: controller.active.value!.dt,
                             type: TimeType.date,
                           ),
                           style: TextStyle(
@@ -221,27 +203,22 @@ class HomeView extends GetView<HomeController> {
                         Expanded(
                           child: Obx(
                             () => WindSpeedWidget(
-                              windSpeed: controller
-                                      .todayWeather.value?.current.wind_speed ??
-                                  0,
+                              windSpeed:
+                                  controller.active.value?.wind_speed ?? 0,
                             ),
                           ),
                         ),
                         Expanded(
                           child: Obx(
                             () => HumidityWidget(
-                              humidity: controller
-                                      .todayWeather.value?.current.humidity ??
-                                  0,
+                              humidity: controller.active.value?.humidity ?? 0,
                             ),
                           ),
                         ),
                         Expanded(
                           child: Obx(
                             () => ChanceOfRainWidget(
-                              cloud: controller
-                                      .todayWeather.value?.current.clouds ??
-                                  0,
+                              cloud: controller.active.value?.clouds ?? 0,
                             ),
                           ),
                         ),
@@ -317,12 +294,27 @@ class HomeView extends GetView<HomeController> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     SizedBox(width: 34.w),
-                                    HourWeatherWidget(weather: hourList[index]),
+                                    Obx(
+                                      () => HourWeatherWidget(
+                                        weather: hourList[index],
+                                        onPressed: () => controller
+                                            .active.value = hourList[index],
+                                        active: controller.active.value?.dt ==
+                                            hourList[index].dt,
+                                      ),
+                                    ),
                                   ],
                                 );
                               }
-                              return HourWeatherWidget(
-                                  weather: hourList[index]);
+                              return Obx(
+                                () => HourWeatherWidget(
+                                  weather: hourList[index],
+                                  onPressed: () =>
+                                      controller.active.value = hourList[index],
+                                  active: controller.active.value?.dt ==
+                                      hourList[index].dt,
+                                ),
+                              );
                             },
                           );
                         }
@@ -340,9 +332,3 @@ class HomeView extends GetView<HomeController> {
     );
   }
 }
-
-
-
-
-
-
