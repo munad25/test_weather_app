@@ -17,7 +17,7 @@ String number2Time({ required int number, required TimeType type}) {
       final date = DateTime.fromMillisecondsSinceEpoch(number * 1000);
       final day = CalendarTime(date);
       final dayLable = day.isToday ? 'Today' : day.isTomorrow ? 'Tomorrow' : DateFormat('E').format(date); 
-      return DateFormat('$dayLable, dd MM yyyy').format(DateTime.fromMillisecondsSinceEpoch(number * 1000));
+      return dayLable + DateFormat(', dd MM yyyy').format(DateTime.fromMillisecondsSinceEpoch(number * 1000));
     case TimeType.day:
       final date = DateTime.fromMillisecondsSinceEpoch(number * 1000, isUtc: true);
       final day = CalendarTime(date);
