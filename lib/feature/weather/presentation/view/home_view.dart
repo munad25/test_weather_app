@@ -74,7 +74,7 @@ class HomeView extends GetView<HomeController> {
                                 SizedBox(width: 6.w),
                                 Obx(
                                   () => Text(
-                                    controller.placemark.value?.locality ?? '-',
+                                     controller.placemark.value?.locality ?? controller.latestPosition.value,
                                     style: TextStyle(
                                       color: AppColors.white,
                                       fontSize: 22.sp,
@@ -106,12 +106,14 @@ class HomeView extends GetView<HomeController> {
                                 color: AppColors.yellowLight),
                           ),
                           SizedBox(width: 4.w),
-                          Text(
-                            'Updated 10min ago',
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w400,
+                          Obx(
+                            () => Text(
+                              controller.latestUpdate.value,
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                           ),
                         ],
@@ -125,7 +127,11 @@ class HomeView extends GetView<HomeController> {
                           height: 150.h,
                           width: 150.h,
                           child: CachedNetworkImage(
-                            errorWidget: (context, url, error) => Icon(Iconsax.gallery_slash, color: AppColors.white, size: 40.sp,),
+                            errorWidget: (context, url, error) => Icon(
+                              Iconsax.gallery_slash,
+                              color: AppColors.white,
+                              size: 40.sp,
+                            ),
                             fit: BoxFit.cover,
                             alignment: FractionalOffset.topCenter,
                             imageUrl:

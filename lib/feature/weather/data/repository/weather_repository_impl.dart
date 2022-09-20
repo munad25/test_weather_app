@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:test_weather_app/core/utils/local_data.dart';
 import 'package:test_weather_app/feature/weather/data/datasource/weather_local_services.dart';
 import 'package:test_weather_app/feature/weather/data/datasource/weather_network_services.dart';
 import 'package:test_weather_app/feature/weather/data/model/daily_weather_model.dart';
@@ -16,8 +17,9 @@ import 'package:test_weather_app/feature/weather/domain/schema/get_weather_schem
 class WeatherRepositoryImpl implements WeatherRepository {
   final WeatherNetworkSerices _networkServices;
   final WeatherLocalServices _localServices;
+  final _localData = LocalData();
 
-  const WeatherRepositoryImpl(this._networkServices, this._localServices);
+  WeatherRepositoryImpl(this._networkServices, this._localServices);
 
   @override
   Future<Either<Failure, TodayWeather>> getTodayWeather(
@@ -31,6 +33,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
 
       final response = await _networkServices.getWeatherData(queries.build());
       final todayWeather = TodayWeatherModel.fromJson(response.data);
+      await _localData.setLatestUpdate(DateTime.now());
       await _localServices.saveTodayWeatherData(todayWeather);
       return Right(todayWeather);
     } on DioError catch (err) {
@@ -54,6 +57,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
       );
 
       final response = await _networkServices.getWeatherData(queries.build());
+      await _localData.setLatestUpdate(DateTime.now());
       final List<dynamic> rawData = response.data['daily'] ?? [];
       final dailyWeather = rawData.map((e) => DailyWeatherModel.fromJson(e)).toList();
 

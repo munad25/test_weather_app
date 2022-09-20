@@ -20,7 +20,7 @@ class WeatherDailyController extends GetxController {
   
   
   @override
-  void onInit() {
+  void onInit() async {
      final connectifity = Connectivity().onConnectivityChanged.listen((event) {
       if (event == ConnectivityResult.mobile ||
           event == ConnectivityResult.wifi) {
@@ -30,12 +30,20 @@ class WeatherDailyController extends GetxController {
       }
     });
 
-    ever(internetStatus, (_) {
-      initData();
+    final checkInternet = await Connectivity().checkConnectivity();
+    if(checkInternet == ConnectivityResult.mobile || checkInternet == ConnectivityResult.wifi) {
+      internetStatus.value = ConnectifityStatus.online;
+    } else {
+      internetStatus.value = ConnectifityStatus.offline;
+    }
+
+      await initData();
+    
+    ever(internetStatus, (_) async {
+      await initData();
     });
 
 
-    initData();
     // TODO: implement onInit
     super.onInit();
   }
